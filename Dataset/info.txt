@@ -1,0 +1,9 @@
+Si tratta delle strisciate delle VeronaCard dal 2014 al 2020 (un file CSV per ogni anno). La struttura di tutti i file è la seguente:
+
+Data ingresso
+Ora ingresso 
+POI
+Dispositivo: codice identificativo del dispositivo su cui è stata fatta la strisciata (potrebbero essercene più d'uno per lo stesso POI)
+Seriale VeronaCard
+Data Attivazione
+Profilo: tipo di VC (24-ore, 48-ore, ecc...)

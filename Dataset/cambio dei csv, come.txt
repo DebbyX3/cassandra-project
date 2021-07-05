@@ -1,0 +1,10 @@
+ho splittato su excel le celle per virgola
+poi ho sistemato gli anni in moco che avessero il 20 davanti
+ho unito giorni con ore in modo da avere un timestamp nel formato yyyy-mm-dd hh:mm:ss
+
+ho cancellato le colonne con in e il numero dopo
+ho riunito il tutto con un concat alla virgola
+
+sono state dette parolacce perchè all'inizio i device erano una lista ma non servivano
+poi pensavo ci andassero le virgolette per tutto ma non servono, rip
+per le date, excel le converte in numero, che non voglio, quindi dovevo sistemarle in yyyy-mm-dd e poi copiarle e reincollarle come solo testo

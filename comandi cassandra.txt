@@ -1,0 +1,58 @@
+CREATE KEYSPACE killrvideo
+WITH replication = {'class':'SimpleStrategy', 'replication_factor' : 3};
+
+USE killrvideo;
+
+CREATE TABLE videos_by_tag (
+ tag text,
+ video_id uuid,
+ added_date timestamp,
+ title text,
+ PRIMARY KEY (tag, added_date))
+ WITH CLUSTERING ORDER BY(added_date DESC)
+;
+
+NELLA SHELL NORMALE, NON DI CASSANDRA:
+docker cp 'D:\Google Drive\SCUOLA\Università\Magistrale\Basi di dati avanzate\Progetto Cassandra Verona Card\videos-by-tag.csv' cassandra:'/'
+
+COPY videos_by_tag(tag, video_id, added_date, title)
+FROM 'videos-by-tag.csv'
+WITH HEADER = TRUE;
+
+SELECT * FROM videos_by_tag;
+
+--------------
+
+aprire la shell di cassandra (da docker desktop, basta premere il pulsante cli oppure digitare su terminale docker start cassandra)
+
+per accedere alla shell di CQL (cassandra query language) digitare
+cqlshell
+
+----------------
+
+per accedere alle info del nodo
+nodetool
+
+status nodo
+nodetool status
+
+info dettagliate nodo
+nodetool info
+
+mostra impostazioni nodo
+nodetool describecluster
+
+nodetool getlogginglevels
+
+nodetool setlogginglevel org.apache.cassandra TRACE
+
+nodetool settraceprobability 0.1
+
+flush su disco stoppando le scritture. si usa prima di stoppare il nodo
+nodetool drain
+
+stop esecuzione nodo
+nodetool stopdaemon
+
+------------------
+

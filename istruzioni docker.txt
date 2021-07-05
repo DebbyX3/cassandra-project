@@ -1,0 +1,42 @@
+Ho fatto tutto su docker. voglio poter usare un'interfaccia web, quindi uso cassandra-web
+
+installare il container di cassandra su docker
+docker pull cassandra:latest
+
+creare il container
+docker network create cassandra
+
+avviarlo esponendo le porte 9042 e 9160 SOLO LA PRIMA VOLTA
+docker run -d -p 127.0.0.1:9042:9042 -p 127.0.0.1:9160:9160 --name cassandra --hostname cassandra --network cassandra cassandra
+
+LE VOLTE SUCCESSIVE AVVIARLO CON 
+docker start cassandra
+
+ora che ho la porta esposta, installo ed avvio cassandra-web o similare
+https://github.com/orzhaha/cassandra-web
+docker run -d \
+  -e HOST_PORT=:5001 \
+  -e CASSANDRA_HOST=cassandra \
+  -e CASSANDRA_USERNAME=cassandra \
+  -e CASSANDRA_PASSWORD=cassandra \
+  --network cassandra \
+  -p 5001:5001 \
+  --name cassandra-web \
+  ipushc/cassandra-web
+
+comando identico ma su una riga sola
+docker run -d -e HOST_PORT=:5001 -e CASSANDRA_HOST=cassandra -e CASSANDRA_USERNAME=cassandra -e CASSANDRA_PASSWORD=cassandra --network cassandra -p 5001:5001 --name cassandra-web ipushc/cassandra-web
+
+per avviarlo, digitare nel browser
+http://localhost:5001
+
+-------
+
+roba che non serve
+
+cassandra web originale
+https://github.com/avalanche123/cassandra-web
+
+questo non va, crasha
+https://github.com/MG-Cloud-Consultants/cassandra-web-docker
+docker run -d -p 3000:3000 -e CASSANDRA_HOST_IPS=127.0.0.1 -e CASSANDRA_PORT=9042 -e CASSANDRA_USER=cassandra -e CASSANDRA_PASSWORD=cassandra markusgulden/cassandra-web

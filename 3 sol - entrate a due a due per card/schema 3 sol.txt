@@ -1,0 +1,138 @@
+CREATE KEYSPACE vrcard WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+
+USE vrcard;
+
+CREATE TABLE grouped_entrances_two_by_two_by_card (
+	card_serial Text,
+	first_poi Text,
+	first_entrance Timestamp,
+	second_poi Text,
+	second_entrance Timestamp,
+	PRIMARY KEY ((card_serial), first_entrance, first_poi)
+)
+WITH CLUSTERING ORDER BY (first_entrance ASC);
+
+COPY grouped_entrances_two_by_two_by_card (card_serial,first_poi,first_entrance,second_poi,second_entrance)
+FROM 'dati_2014 by user grouped two by two.csv'
+WITH HEADER = true;
+
+COPY grouped_entrances_two_by_two_by_card (card_serial,first_poi,first_entrance,second_poi,second_entrance)
+FROM 'dati_2015 by user grouped two by two.csv'
+WITH HEADER = true;
+
+COPY grouped_entrances_two_by_two_by_card (card_serial,first_poi,first_entrance,second_poi,second_entrance)
+FROM 'dati_2016 by user grouped two by two.csv'
+WITH HEADER = true;
+
+COPY grouped_entrances_two_by_two_by_card (card_serial,first_poi,first_entrance,second_poi,second_entrance)
+FROM 'dati_2017 by user grouped two by two.csv'
+WITH HEADER = true;
+
+COPY grouped_entrances_two_by_two_by_card (card_serial,first_poi,first_entrance,second_poi,second_entrance)
+FROM 'dati_2018 by user grouped two by two.csv'
+WITH HEADER = true;
+
+COPY grouped_entrances_two_by_two_by_card (card_serial,first_poi,first_entrance,second_poi,second_entrance)
+FROM 'dati_2019 by user grouped two by two.csv'
+WITH HEADER = true;
+
+COPY grouped_entrances_two_by_two_by_card (card_serial,first_poi,first_entrance,second_poi,second_entrance)
+FROM 'dati_2020 by user grouped two by two.csv'
+WITH HEADER = true;
+
+CREATE OR REPLACE FUNCTION vrcard.computeStayTwoByTwo (first_entrance Timestamp, second_entrance Timestamp, first_poi Text, second_poi Text) 
+CALLED ON NULL INPUT 
+RETURNS bigint
+LANGUAGE java AS 
+$$ 
+	String prova = "";
+	int i = 0;
+	String poi1 = "";
+	Date entrance1 = new Date();
+	
+	int[][] seconds_distance_matrix = 
+	{
+    {	0,	    180,	480,	60,	    540,	60,	    600,	60,	    60,	    600,	840,	600,	780,	780,	360,	360,	180,	180,	600,	660,	0,	240	},
+    {	180,	0,	    480,	240,	540,	240,	600,	300,	120,	660,	900,	660,	780,	900,	180,	360,	360,	60,	    480,	660,	0,	300	},
+    {	480,	480,	0,	    480,	360,	480,	480,	480,	600,	780,	1320,	480,	540,	480,	540,	180,	360,	420,	600,	480,	0,	720	},
+    {	60,	    240,	480,	0,	    600,	60,	    660,	60,	    60,	    540,	780,	540,	840,	720,	360,	420,	120,	240,	660,	720,	0,	240	},
+    {	540,	540,	360,	600,	0,	    540,	660,	540,	540,	360,	600,	60,	    420,	660,	600,	360,	480,	480,	720,	660,	0,	780	},
+    {	60,	    240,	480,	60,	    540,	0,	    660,	60,	    120,	540,	780,	540,	840,	720,	360,	360,	60,	    240,	660,	720,	0,	240	},
+    {	600,	600,	480,	660,	660,	660,	0,	    660,	540,	960,	1440,	720,	840,	300,	720,	360,	540,	600,	360,	240,	0,	840	},
+    {	60,	    300,	480,	60,	    540,	60,	    660,	0,	    120,	540,	780,	540,	900,	720,	360,	420,	120,	240,	660,	720,	0,	180	},
+    {	60,	    120,	600,	60,	    540,	120,	540,	120,	0,	    660,	900,	600,	720,	840,	240,	300,	180,	120,	540,	660,	0,	300	},
+    {	600,	660,	780,	540,	360,	540,	960,	540,	660,	0,	    420,	300,	780,	840,	780,	540,	660,	780,	1020,	1020,	0,	600	},
+    {	840,	900,	1320,	780,	600,	780,	1440,	780,	900,	420,	0,	    600,	1200,	1560,	1080,	1200,	900,	960,	1200,	1320,	0,	780	},
+    {	600,	660,	480,	540,	60,	    540,	720,	540,	600,	300,	600,	0,	    540,	600,	660,	300,	420,	540,	840,	720,	0,	720	},
+    {	780,	780,	540,	840,	420,	840,	840,	900,	720,	780,	1200,	540,	0,	    840,	720,	360,	480,	600,	960,	840,	0,	900	},
+    {	780,	900,	480,	720,	660,	720,	300,	720,	840,	840,	1560,	600,	840,	0,	    960,	420,	600,	840,	780,	600,	0,	900	},
+    {	360,	180,	540,	360,	600,	360,	720,	360,	240,	780,	1080,	660,	720,	960,	0,	    480,	540,	180,	420,	600,	0,	180	},
+    {	360,	360,	180,	420,	360,	360,	360,	420,	300,	540,	1200,	300,	360,	420,	480,	0,	    240,	300,	600,	480,	0,	600	},
+    {	180,	360,	360,	120,	480,	60,	    540,	120,	180,	660,	900,	420,	480,	600,	540,	240,	0,	    180,	600,	600,	0,	300	},
+    {	180,	60,	    420,	240,	480,	240,	600,	240,	120,	780,	960,	540,	600,	840,	180,	300,	180,	0,	    360,	600,	0,	180	},
+    {	600,	480,	600,	660,	720,	660,	360,	660,	540,	1020,	1200,	840,	960,	780,	420,	600,	600,	360,	0,	    240,	0,	480	},
+    {	660,	660,	480,	720,	660,	720,	240,	720,	660,	1020,	1320,	720,	840,	600,	600,	480,	600,	600,	240,	0,	    0,	660	},
+    {	0,	    0,	    0,	    0,	    0,	    0,	    0,	    0,	    0,	    0,	    0,	    0,	    0,	    0,	    0,	    0,	    0,	    0,	    0,	    0,	    0,	0	},
+    {	240,	300,	720,	240,	780,	240,	840,	180,	300,	600,	780,	720,	900,	900,	180,	600,	300,	180,	480,	660,	0,	0	}
+	};
+	
+	
+	Map<String, Integer> nameIndexMap = new HashMap<String, Integer>();	
+	nameIndexMap.put("Centro Fotografia", 0);	
+    nameIndexMap.put("Santa Anastasia", 1);
+    nameIndexMap.put("Museo Storia", 2);
+    nameIndexMap.put("Torre Lamberti", 3);
+    nameIndexMap.put("Arena", 4);
+    nameIndexMap.put("Palazzo della Ragione", 5);
+    nameIndexMap.put("Giardino Giusti", 6);
+    nameIndexMap.put("Sighseeing", 7);
+    nameIndexMap.put("Museo Conte", 8);
+    nameIndexMap.put("Castelvecchio", 9);
+    nameIndexMap.put("San Zeno", 10);
+    nameIndexMap.put("Museo Lapidario", 11);
+    nameIndexMap.put("Tomba Giulietta", 12);
+    nameIndexMap.put("Museo Radio", 13);
+    nameIndexMap.put("Duomo", 14);
+    nameIndexMap.put("San Fermo", 15);
+    nameIndexMap.put("Casa Giulietta", 16);
+    nameIndexMap.put("AMO", 17);
+    nameIndexMap.put("Teatro Romano", 18);
+    nameIndexMap.put("Museo Africano", 19);
+    nameIndexMap.put("Verona Tour", 20);
+    nameIndexMap.put("Museo Miniscalchi", 21);
+	
+	if(first_entrance.getDay() == second_entrance.getDay() && first_entrance.getMonth() == second_entrance.getMonth() && first_entrance.getYear() == second_entrance.getYear())
+		return ((second_entrance.getTime() - first_entrance.getTime()) / 1000) - seconds_distance_matrix[nameIndexMap.get(first_poi)][nameIndexMap.get(second_poi)];
+	
+	return 0L;
+$$
+; 
+
+PAGING OFF;
+
+CAPTURE '/capture.csv';
+
+SELECT uuid(), computeStayTwoByTwo(first_entrance, second_entrance, first_poi, second_poi), first_poi 
+FROM grouped_entrances_two_by_two_by_card;
+
+CAPTURE OFF;
+
+PAGING ON;
+
+CREATE TABLE stay_times(
+	poi Text,
+	row_id uuid,
+	stay_time bigint,
+	PRIMARY KEY((poi), row_id)
+);
+
+// prima di fare il resto, fare il preprocessing de file generato descritto nel file di istruzioni
+
+COPY stay_times (row_id, stay_time, poi)
+FROM 'stayTimeForEachPOI.csv'
+WITH HEADER = true;
+
+SELECT AVG(stay_time), poi 
+FROM stay_times
+GROUP BY poi;
+

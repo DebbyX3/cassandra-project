@@ -1,0 +1,14 @@
+dopo aver ricevuto il capture da cassandra con la query: 
+
+select uuid(), computeStayTwoByTwo(first_entrance, second_entrance, first_poi, second_poi), first_poi from grouped_entrances_two_by_two_by_card;
+
+prendere il file di capture, togliere la prima ed ultima riga, togliere la delimitazione sotto i nomi di campi
+
+cambia la riga di intestazione con:
+ uuid                   			  | stayTime																		   | poi
+
+su excel, cancella spazi inutili (tutti), cancella righe che sono uguali a 0 su staytime
+
+ricordati di passare tutto a docker poi
+
+docker cp '.\stayTimeForEachPOI.csv' cassandra:'/'
