@@ -35,7 +35,7 @@ COPY grouped_entrances_by_card (card_serial,entrances)
 FROM 'dati_2014 by user grouped.csv'
 WITH HEADER = true and DELIMITER='|';
 
-CREATE OR REPLACE FUNCTION vrcard.computeStayTwo (entrances map<Timestamp, Text>) 
+CREATE OR REPLACE FUNCTION vrcard.computeStay (entrances map<Timestamp, Text>) 
 CALLED ON NULL INPUT 
 RETURNS map<Text, bigint>
 LANGUAGE java AS 

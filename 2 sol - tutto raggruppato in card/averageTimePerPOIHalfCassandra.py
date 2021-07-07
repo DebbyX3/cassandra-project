@@ -117,7 +117,7 @@ avreageStayInSeconds = {
 card_serial = ''
 
 # computedStayes<String, long>, contiene posto e permanenza in secondi
-for val in session.execute("select computeStayTwo(entrances) from grouped_entrances_by_card"):
+for val in session.execute("select computeStay(entrances) from grouped_entrances_by_card"):
     for key in val[0]: #val[0] contiene la mappa
         permanenceTimePOISumDict[key] = permanenceTimePOISumDict[key] + val[0][key] 
         countVisitDict[key] = countVisitDict[key] + 1
