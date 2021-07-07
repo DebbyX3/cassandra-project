@@ -2,19 +2,24 @@
 # il problema è che poi dopo la matrice dei tempi sarebbe da aggiornare con le nuove combinazioni (che sono state calcolate a mano)
 
 from cassandra.cluster import Cluster
+
 import uuid
 import csv
-
+import time
 import datetime  
+
+startTime = time.time()
 
 cluster = Cluster(protocol_version = 3)
 session = cluster.connect('vrcard')
 
+result = []
+
 '''
-f=open('D:\\Google Drive\\SCUOLA\\Università\\Magistrale\\Basi di dati avanzate\\Progetto Cassandra Verona Card\\3 sol - entrate a due a due per card\\stayTimeForEachPOI.csv','w')
+f=open('D:\\Universita\\Cassandra project - basi di dati avanzate\\3 sol - entrate a due a due per card\\stayTimeForEachPOI.csv','w')
 
 f.write("row_id,stay_time,poi" + "\n")
-
+'''
 #PROBLEMA: ESEGUIRE UNA UDF SU UNA TABELLA è MOLTO DISPENIOSO!
 #uuid, stay_time udf, first_poi
 for data in session.execute("""
@@ -22,6 +27,9 @@ for data in session.execute("""
         FROM grouped_entrances_two_by_two_by_card;
     """):
 
+    result.append(str(data[0]) + str(data[1]) + data[2])
+
+'''
     #scrivo su file i dati letti in caso mi servissero, tolgo anche le righe con media = 0
     if data[1] != 0:
         f.write(str(data[0]) + "," + str(data[1])+ "," + data[2]+ "\n")
@@ -35,13 +43,12 @@ for data in session.execute("""
         """,
         (data[0], data[1], data[2]))
         
-
 f.close()
 '''
 
 #troppo lento
 '''
-with open('D:\\Google Drive\\SCUOLA\\Università\\Magistrale\\Basi di dati avanzate\\Progetto Cassandra Verona Card\\3 sol - entrate a due a due per card\\stayTimeForEachPOI.csv') as csv_file:
+with open('D:\\Universita\\Cassandra project - basi di dati avanzate\\3 sol - entrate a due a due per card\stayTimeForEachPOI.csv') as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
 
     next(csv_reader, None) #skip header
@@ -60,6 +67,14 @@ with open('D:\\Google Drive\\SCUOLA\\Università\\Magistrale\\Basi di dati avanz
 
 pois = []
 
+'''for data in session.execute("""
+SELECT AVG(stay_time), poi 
+FROM stay_times
+GROUP BY poi;
+"""):
+    print(data.poi, datetime.timedelta(seconds=data[0]))
+'''
+
 for poiData in session.execute("""
     SELECT DISTINCT poi
         FROM stay_times;
@@ -75,6 +90,7 @@ for poiData in session.execute("""
             print(data.poi, datetime.timedelta(seconds=data[0]))
 
 
+print("--- %s seconds ---" % (time.time() - startTime))
 
     
 '''

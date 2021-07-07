@@ -2,9 +2,12 @@
 # il problema è che poi dopo la matrice dei tempi sarebbe da aggiornare con le nuove combinazioni (che sono state calcolate a mano)
 
 from cassandra.cluster import Cluster
-import uuid
 
+import uuid
 import datetime  
+import time
+
+startTime = time.time()
 
 cluster = Cluster(protocol_version = 3)
 session = cluster.connect('vrcard')
@@ -136,6 +139,7 @@ print("\n")
 for key in avreageStayInSeconds:
     print(key, datetime.timedelta(seconds=avreageStayInSeconds[key]))
 
+print("--- %s seconds ---" % (time.time() - startTime))
 
 
 '''

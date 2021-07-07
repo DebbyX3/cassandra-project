@@ -1,10 +1,13 @@
-#TODO: magari prendere i nomi per riempire le mappe con una query, tipo: select distinct poi_name from entrance_by_poi;
+# magari prendere i nomi per riempire le mappe con una query, tipo: select distinct poi_name from entrance_by_poi;
 # il problema è che poi dopo la matrice dei tempi sarebbe da aggiornare con le nuove combinazioni (che sono state calcolate a mano)
 
 from cassandra.cluster import Cluster
-import uuid
 
+import uuid
 import datetime  
+import time
+
+startTime = time.time()
 
 cluster = Cluster(protocol_version = 3)
 session = cluster.connect('vrcard')
@@ -177,7 +180,7 @@ print("\n")
 for key in avreageStayInSeconds:
     print(key, datetime.timedelta(seconds=avreageStayInSeconds[key]))
 
-
+print("--- %s seconds ---" % (time.time() - startTime))
 
 '''
  048667C27B3F80 | 2016-10-05 11:38:52.000000+0000 |   Castelvecchio |      2016-10-05 |        35 |   vrcard2-48

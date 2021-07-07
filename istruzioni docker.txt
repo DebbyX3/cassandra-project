@@ -24,8 +24,11 @@ docker run -d \
   --name cassandra-web \
   ipushc/cassandra-web
 
-comando identico ma su una riga sola
+comando identico ma su una riga sola SOLO LA PRIMA VOLTA!
 docker run -d -e HOST_PORT=:5001 -e CASSANDRA_HOST=cassandra -e CASSANDRA_USERNAME=cassandra -e CASSANDRA_PASSWORD=cassandra --network cassandra -p 5001:5001 --name cassandra-web ipushc/cassandra-web
+
+per avviare cassandra-web:
+docker start cassandra-web
 
 per avviarlo, digitare nel browser
 http://localhost:5001

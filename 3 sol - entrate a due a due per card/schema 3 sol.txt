@@ -136,3 +136,8 @@ SELECT AVG(stay_time), poi
 FROM stay_times
 GROUP BY poi;
 
+////
+SELECT AVG(stay_time), poi 
+FROM stay_times
+WHERE poi_name = 'Arena';
+
