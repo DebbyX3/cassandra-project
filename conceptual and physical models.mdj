@@ -1267,7 +1267,7 @@
 									"hostEdge": {
 										"$ref": "AAAAAAF6fbt7FBmBD2k="
 									},
-									"text": "+1...1"
+									"text": "+1...*"
 								},
 								{
 									"_type": "EdgeLabelView",
@@ -1634,7 +1634,7 @@
 								"_parent": {
 									"$ref": "AAAAAAF6fbt7EhlzeLg="
 								},
-								"name": "1...1",
+								"name": "1...*",
 								"reference": {
 									"$ref": "AAAAAAF6faJeFBdif+c="
 								}
